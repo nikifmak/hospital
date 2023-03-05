@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ScheduleControllerTest {
 
     public static final String CLEAN_TABLES_QUERY = """
@@ -169,7 +171,7 @@ class ScheduleControllerTest {
     @Sql(statements = """
             INSERT INTO doctor (id, name)
             VALUES (1, 'John Smith');
-            
+                        
             INSERT INTO schedule (id, doctor_id, day_of_week, start_time, end_time)
             VALUES
             (1, 1, 'MONDAY', '09:00:00', '13:00:00');
@@ -177,7 +179,7 @@ class ScheduleControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = CLEAN_TABLES_QUERY,
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void test_createAppointment_whenScheduleForDayAlreadyExists_thenCannotCreateSameDayAndReturn409() throws Exception {
+    void test_createSchedule_whenScheduleForDayAlreadyExists_thenCannotCreateSameDayAndReturn409() throws Exception {
         String request = """
                 {
                     "doctorId": 1,
@@ -200,7 +202,7 @@ class ScheduleControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = CLEAN_TABLES_QUERY,
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void test_createAppointment_success() throws Exception {
+    void test_createSchedule_success() throws Exception {
         String request = """
                 {
                     "doctorId": 1,
@@ -236,7 +238,7 @@ class ScheduleControllerTest {
     @Sql(statements = """
             INSERT INTO doctor (id, name)
             VALUES (1, 'John Smith');
-            
+                        
             INSERT INTO schedule (id, doctor_id, day_of_week, start_time, end_time)
             VALUES
             (1, 1, 'MONDAY', '09:00:00', '13:00:00');
@@ -244,7 +246,7 @@ class ScheduleControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = CLEAN_TABLES_QUERY,
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void test_updateAppointment_success() throws Exception {
+    void test_updateSchedule_success() throws Exception {
         String request = """
                 {
                     "doctorId": 1,
@@ -275,7 +277,7 @@ class ScheduleControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = CLEAN_TABLES_QUERY,
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void test_updateAppointment_whenWeTryWithScheduleDayThatDontExists_shouldReturnNotFound() throws Exception {
+    void test_updateSchedule_whenWeTryWithScheduleDayThatDontExists_shouldReturnNotFound() throws Exception {
         String request = """
                 {
                     "doctorId": 1,
@@ -288,6 +290,77 @@ class ScheduleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Sql(statements = """
+            INSERT INTO doctor (id, name)
+            VALUES (1, 'John Smith');
+            
+            INSERT INTO schedule (id, doctor_id, day_of_week, start_time, end_time)
+            VALUES
+            (1, 1, 'MONDAY', '09:00:00', '13:00:00'),
+            (2, 1, 'TUESDAY', '12:00:00', '17:00:00')
+            """,
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = CLEAN_TABLES_QUERY,
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void test_upsertScheduleList_success() throws Exception {
+        String request = """
+                [
+                    {
+                        "doctorId": 1,
+                        "dayOfWeek": "MONDAY",
+                        "startTime": "09:00",
+                        "endTime":  "21:00"
+                    },
+                    {
+                        "doctorId": 1,
+                        "dayOfWeek": "TUESDAY",
+                        "startTime": "09:00",
+                        "endTime":  "21:00"
+                    }
+                ]""";
+
+        mockMvc.perform(put("/v1/doctors/1/schedule/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [
+                        {
+                            "id": 1,
+                            "doctorId": 1,
+                            "dayOfWeek": "MONDAY",
+                            "startTime": "09:00:00",
+                            "endTime": "21:00:00"
+                        },
+                        {
+                            "id": 2,
+                            "doctorId": 1,
+                            "dayOfWeek": "TUESDAY",
+                            "startTime": "09:00:00",
+                            "endTime": "21:00:00"
+                        }
+                        ]
+                        """));
+    }
+
+    @Test
+    @Sql(statements = """
+            INSERT INTO doctor (id, name)
+            VALUES (1, 'John Smith');
+            """,
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = CLEAN_TABLES_QUERY,
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void test_upsertScheduleList_withEmptyList_shouldReturn400() throws Exception {
+        String request = "[]";
+
+        mockMvc.perform(put("/v1/doctors/1/schedule/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest());
     }
 
 }

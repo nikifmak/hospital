@@ -14,6 +14,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Intege
 
     Optional<List<ScheduleEntity>> findAllByDoctorId(Integer doctorId);
 
+    void deleteAllByDoctor(DoctorEntity doctor);
+
     Optional<ScheduleEntity> findByDoctorIdAndDayOfWeek(Integer doctorId, DayOfWeek dayOfWeek);
 
     Optional<ScheduleEntity> findByDoctorAndDayOfWeek(DoctorEntity doctor, DayOfWeek dayOfWeek);

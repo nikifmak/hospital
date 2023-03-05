@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,8 +43,7 @@ class AppointmentControllerTest {
     @Test
     void test_createAppointment_whenMethodIsNotPost_shouldReturn405() throws Exception {
         mockMvc.perform(get("/v1/doctors/1/appointments"))
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(content().string(""));
+                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test

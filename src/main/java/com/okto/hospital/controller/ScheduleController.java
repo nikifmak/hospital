@@ -4,7 +4,10 @@ import com.okto.hospital.model.request.ScheduleRequest;
 import com.okto.hospital.model.response.Schedule;
 import com.okto.hospital.service.ScheduleService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
+@Validated
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -59,5 +63,11 @@ public class ScheduleController {
         );
     }
 
-
+    @PutMapping("/doctors/{doctorId}/schedule/list")
+    public List<Schedule> upsertScheduleList(
+            @PathVariable Integer doctorId,
+            @RequestBody @NotEmpty List<@Valid @NotNull ScheduleRequest> scheduleRequestList
+    ) {
+        return scheduleService.upsertScheduleList(doctorId, scheduleRequestList);
+    }
 }
