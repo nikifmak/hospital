@@ -45,15 +45,15 @@ Implement the following two (2) functionalities, plus one (1) optional (please d
 
 ✅Find a doctor's working hours
 ✅Book a doctor appointment
-Optionally, create and update the list of doctor's working hours
+✅Optionally, create and update the list of doctor's working hours
  
 Non-Functional Requirements
 
-Tech stack: Java 11, Spring Boot, Maven or Gradle
-Use JPA 2.x and Spring Data for persistence
-All API calls are unsecured, you don’t need to implement security
-Write comments within the source code (inline) that will help describe the design at code level (comments in persistence model, API operations, etc.). You don’t have to create Swagger/OpenAPI file that describes the API, this is not important.
-Use whatever database you prefer (i.e., in-memory H2)
+✅Tech stack: Java 11, Spring Boot, Maven or Gradle
+✅Use JPA 2.x and Spring Data for persistence
+✅All API calls are unsecured, you don’t need to implement security
+✅Write comments within the source code (inline) that will help describe the design at code level (comments in persistence model, API operations, etc.). You don’t have to create Swagger/OpenAPI file that describes the API, this is not important.
+✅Use whatever database you prefer (i.e., in-memory H2)
  
 Deliverables
 
