@@ -1,4 +1,4 @@
-package com.okto.hospital.service;
+package com.okto.hospital.service.schedule;
 
 
 import com.okto.hospital.exception.ResourceAlreadyExists;

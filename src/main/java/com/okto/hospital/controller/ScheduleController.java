@@ -2,7 +2,7 @@ package com.okto.hospital.controller;
 
 import com.okto.hospital.model.request.ScheduleRequest;
 import com.okto.hospital.model.response.Schedule;
-import com.okto.hospital.service.ScheduleService;
+import com.okto.hospital.service.schedule.ScheduleService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

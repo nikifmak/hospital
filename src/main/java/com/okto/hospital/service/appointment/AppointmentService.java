@@ -1,4 +1,4 @@
-package com.okto.hospital.service;
+package com.okto.hospital.service.appointment;
 
 import com.okto.hospital.model.response.Appointment;
 

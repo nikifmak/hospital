@@ -2,7 +2,7 @@ package com.okto.hospital.controller;
 
 import com.okto.hospital.model.request.AppointmentRequest;
 import com.okto.hospital.model.response.Appointment;
-import com.okto.hospital.service.AppointmentService;
+import com.okto.hospital.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
