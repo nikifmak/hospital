@@ -23,6 +23,13 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
+    /**
+     * Create an appointment for a patient with a doctor
+     *
+     * @param doctorId          The doctor's id
+     * @param appointmentRequest The appointment request
+     * @return The created appointment
+     */
     @PostMapping("/doctors/{doctorId}/appointments")
     @ResponseStatus(HttpStatus.CREATED)
     public Appointment createAppointment(

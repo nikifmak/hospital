@@ -40,6 +40,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         this.appointmentMapper = appointmentMapper;
     }
 
+    /**
+     * Creates a new appointment for the specified doctor, patient, date, and start time.
+     * Throws an exception if the doctor is not available on that day, the slot is not bookable, or the doctor is already booked in that time slot.
+     * Calls the private method saveAppointment() to persist the new appointment to the database.
+     * Returns the new Appointment object created from the persisted AppointmentEntity object.
+     *
+     * @param doctorId   Doctor id
+     * @param patientId  Patient id
+     * @param date       Date of the appointment
+     * @param startTime  Start time of the appointment
+     * @return Appointment
+     */
     @Override
     public Appointment createAppointment(Integer doctorId, Integer patientId, LocalDate date, LocalTime startTime) {
         var dayAvailability = scheduleRepository.findByDoctorIdAndDayOfWeek(
@@ -65,6 +77,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentMapper.toAppointment(result);
     }
 
+    /**
+     * Creates a new AppointmentEntity object and saves it to the database via the appointmentRepository.
+     * Returns the saved AppointmentEntity object.
+     *
+     * @param dayAvailability the aviailability of the doctor on that day
+     * @param doctorId Doctor id
+     * @param patientId Patient id
+     * @param date the date of the appointment
+     * @param startTime the start time of the appointment(Start of the slot)
+     * @return List of appointments
+     */
     private AppointmentEntity saveAppointment(
             ScheduleEntity dayAvailability,
             Integer doctorId,
@@ -86,6 +109,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         );
     }
 
+
+    /**
+     * Returns the end time of the appointment. If startTime + 60 minutes exceeds the end of
+     * the doctor's working hour then we return the end of the doctor's working hour.
+     *
+     * @param dayAvailability the availability of the doctor on that day
+     * @param startTime the start time of the appointment(Start of the slot)
+     * @return List of appointments
+     */
     private LocalTime calculateEndTime(ScheduleEntity dayAvailability, LocalTime startTime) {
         LocalTime plusOneHour = startTime.plusMinutes(60);
         return (plusOneHour.isAfter(dayAvailability.getEndTime()))
@@ -97,6 +129,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         return date.getDayOfWeek();
     }
 
+    /**
+     * Returns true if the doctor is works that day and the working hours include
+     * the appointment's start time.
+     *
+     * @param dayAvailability doctor's availability on that day
+     * @param doctorId Doctor id
+     * @param date the date of the appointment
+     * @param appointmentStartTime the start time of the appointment(Start of the slot)
+     * @return boolean
+     */
     private boolean isDoctorAvailableThatDayAndHours(
             Optional<ScheduleEntity> dayAvailability,
             Integer doctorId,
@@ -117,6 +159,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         return isAvailableThatHours;
     }
 
+    /**
+     * Given the working hours, its generates the available slots for the doctor.
+     * We are assuming the doctor works in 1 hour slots.
+     * So if they work from 10:00 to 16:00, they have 6 slots available.
+     * which are 10:00, 11:00, 12:00, 13:00, 14:00, 15:00
+     * After generating the timeslots, checks if the proposed appointment's start time is in the list of available slots.
+     *
+     * @param dayAvailability doctor's availability on that day
+     * @param appointmentStartTime the start time of the appointment(Start of the slot)
+     * @return boolean returns true if the appointment's start time is in the list of available slots.
+     */
     private boolean isSlotBookable(Optional<ScheduleEntity> dayAvailability, LocalTime appointmentStartTime) {
         if (dayAvailability.isEmpty()) {
             return false;
@@ -138,6 +191,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         return slots.contains(appointmentStartTime);
     }
 
+    /**
+     * Returns true if the doctor is not booked in that time slot. We fetch all the appointments
+     * of the doctor on that day and check if the appointment's start time is equal to the proposed
+     *
+     * @param doctorId Doctor id
+     * @param date the date of the appointment
+     * @param appointmentStartTime the start time of the appointment(Start of the slot)
+     * @return boolean true
+     */
     private boolean isDoctorFreeInThatTimeSlot(Integer doctorId, LocalDate date, LocalTime appointmentStartTime) {
         return appointmentRepository.findByDoctorIdAndDate(doctorId, date)
                 .stream()

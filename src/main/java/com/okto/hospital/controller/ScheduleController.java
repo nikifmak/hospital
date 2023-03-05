@@ -30,11 +30,24 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
+    /**
+     * Get the schedule of a doctor
+     *
+     * @param doctorId The doctor's id
+     * @return The schedule of the doctor
+     */
     @GetMapping("/doctors/{doctorId}/schedule")
     public List<Schedule> getSchedule(@PathVariable Integer doctorId) {
         return scheduleService.getScheduleByDoctorId(doctorId);
     }
 
+    /**
+     * Create a schedule for a doctor
+     *
+     * @param doctorId The doctor's id
+     * @param schedule The schedule request
+     * @return The created schedule
+     */
     @PostMapping("/doctors/{doctorId}/schedule")
     @ResponseStatus(HttpStatus.CREATED)
     public Schedule createSchedule(
@@ -49,6 +62,13 @@ public class ScheduleController {
         );
     }
 
+    /**
+     * Update a schedule for a doctor
+     *
+     * @param doctorId The doctor's id
+     * @param schedule The schedule request
+     * @return The updated schedule
+     */
     @PutMapping("/doctors/{doctorId}/schedule")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Schedule updateSchedule(
@@ -63,6 +83,13 @@ public class ScheduleController {
         );
     }
 
+    /**
+     * Upsert a list of schedules for a doctor
+     *
+     * @param doctorId The doctor's id
+     * @param scheduleRequestList The list of schedule requests
+     * @return The list of schedules
+     */
     @PutMapping("/doctors/{doctorId}/schedule/list")
     public List<Schedule> upsertScheduleList(
             @PathVariable Integer doctorId,
