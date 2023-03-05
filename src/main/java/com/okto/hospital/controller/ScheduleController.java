@@ -1,8 +1,9 @@
 package com.okto.hospital.controller;
 
-import com.okto.hospital.model.ScheduleEntity;
+import com.okto.hospital.model.request.ScheduleRequest;
 import com.okto.hospital.model.response.Schedule;
 import com.okto.hospital.service.ScheduleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,14 +33,31 @@ public class ScheduleController {
 
     @PostMapping("/doctors/{doctorId}/schedule")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createSchedule(@PathVariable Integer doctorId, @RequestBody ScheduleEntity schedule) {
-
+    public Schedule createSchedule(
+            @PathVariable Integer doctorId,
+            @Valid @RequestBody ScheduleRequest schedule
+    ) {
+        return scheduleService.createSchedule(
+                doctorId,
+                schedule.dayOfWeek(),
+                schedule.startTime(),
+                schedule.endTime()
+        );
     }
 
     @PutMapping("/doctors/{doctorId}/schedule")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateSchedule(@PathVariable Integer doctorId, @RequestBody ScheduleEntity schedule) {
-
+    public Schedule updateSchedule(
+            @PathVariable Integer doctorId,
+            @Valid @RequestBody ScheduleRequest schedule
+    ) {
+        return scheduleService.updateSchedule(
+                doctorId,
+                schedule.dayOfWeek(),
+                schedule.startTime(),
+                schedule.endTime()
+        );
     }
+
 
 }

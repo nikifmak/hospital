@@ -10,11 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-@Entity(name = "schedule")
+@Entity
+@Table(name = "schedule", uniqueConstraints = {@UniqueConstraint(columnNames = {"doctor_id", "day_of_week"})})
 public class ScheduleEntity {
 
         @Id
@@ -32,6 +35,13 @@ public class ScheduleEntity {
         private LocalTime endTime;
 
         public ScheduleEntity() {
+        }
+
+        public ScheduleEntity(DoctorEntity doctor, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+                this.doctor = doctor;
+                this.dayOfWeek = dayOfWeek;
+                this.startTime = startTime;
+                this.endTime = endTime;
         }
 
         public Integer getId() {

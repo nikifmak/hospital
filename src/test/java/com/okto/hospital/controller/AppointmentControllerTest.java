@@ -2,7 +2,6 @@ package com.okto.hospital.controller;
 
 import com.okto.hospital.model.AppointmentEntity;
 import com.okto.hospital.repository.AppointmentRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -49,9 +48,8 @@ class AppointmentControllerTest {
                 .andExpect(content().string(""));
     }
 
-    @Disabled //TODO
     @Test
-    void test_createAppointment_whenDoctorDoesNotExist_shouldReturn404() throws Exception {
+    void test_createAppointment_whenDoctorDoesNotExist_shouldReturn409() throws Exception {
         mockMvc.perform(post("/v1/doctors/1/appointments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -60,8 +58,7 @@ class AppointmentControllerTest {
                                     "date": "2023-03-06",
                                     "startTime": "09:00"
                                 }"""))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+                .andExpect(status().isConflict());
     }
 
     @Test

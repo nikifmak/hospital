@@ -29,5 +29,6 @@ CREATE TABLE schedule
     day_of_week VARCHAR(9),
     start_time  TIME,
     end_time    TIME,
-    FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE
+    FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE,
+    CONSTRAINT unique_doctor_day UNIQUE (doctor_id, day_of_week)
 );

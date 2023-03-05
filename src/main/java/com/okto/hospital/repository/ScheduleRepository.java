@@ -1,5 +1,6 @@
 package com.okto.hospital.repository;
 
+import com.okto.hospital.model.DoctorEntity;
 import com.okto.hospital.model.ScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Intege
     Optional<List<ScheduleEntity>> findAllByDoctorId(Integer doctorId);
 
     Optional<ScheduleEntity> findByDoctorIdAndDayOfWeek(Integer doctorId, DayOfWeek dayOfWeek);
+
+    Optional<ScheduleEntity> findByDoctorAndDayOfWeek(DoctorEntity doctor, DayOfWeek dayOfWeek);
 }
